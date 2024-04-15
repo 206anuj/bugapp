@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -9,9 +10,10 @@
     <style>
         body {
             padding-top: 50px; /* Add padding to body for fixed navbar */
+            background-color: #f8f9fa; /* Light gray background */
         }
         .navbar {
-            background-color: #007bff; /* Navbar background color (Bootstrap primary color) */
+            background-color: #343a40; /* Dark gray background color (Bootstrap dark theme) */
         }
         .navbar-text {
             color: #ffffff; /* Navbar text color */
@@ -19,53 +21,26 @@
         .navbar-nav .nav-item {
             margin-right: 10px; /* Add spacing between navbar items */
         }
-        .btn-primary-report {
-            color: #fff;
-            background-color: #28a745; /* Green color for "Report New Bug" button */
-            border-color: #28a745;
-            padding: 8px 16px;
-            font-size: 14px;
-            text-transform: uppercase;
-        }
-        .btn-primary-report:hover {
-            background-color: #218838; /* Darker green color on hover */
-            border-color: #1e7e34;
-        }
-        .btn-primary-logout {
-            color: #fff;
-            background-color: #dc3545; /* Red color for "Logout" button */
-            border-color: #dc3545;
-            padding: 8px 16px;
-            font-size: 14px;
-            text-transform: uppercase;
-        }
-        .btn-primary-logout:hover {
-            background-color: #c82333; /* Darker red color on hover */
-            border-color: #bd2130;
-        }
-        .btn-primary-download {
-            color: #fff;
-            background-color: #28a745; /* Green color for "Download" button */
-            border-color: #28a745;
-            padding: 8px 16px;
-            font-size: 14px;
-            text-transform: uppercase;
-        }
-        .btn-primary-download:hover {
-            background-color: #218838; /* Darker green color on hover */
-            border-color: #1e7e34;
+        /* Custom logo styling */
+        .navbar-brand img {
+            max-height: 60px; /* Set max height for the logo */
+            margin-right: 15px; /* Add right margin to the logo */
         }
     </style>
 </head>
 <body>
     <!-- Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        
         <div class="container">
-            <a class="navbar-brand" href="#">TIG Bug Tracker</a>
+            <a class="navbar-brand" href="#">
+                <img src="{% static 'images/logo.png' %}" alt="Logo">
+            </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
+                <!-- Navigation Links -->
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
                         <a class="btn btn-primary btn-primary-report" href="{% url 'BugReport:report_bug' %}">Report New Bug</a>
@@ -85,30 +60,32 @@
         {% if user.is_authenticated %}
             <!-- Bug List Table -->
             <h2>Bug List</h2>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Project</th>
-                        <th>SDM</th>
-                        <th>Issue Reported</th>
-                        <th>Resolved By</th>
-                        <th>Created At</th>
-                        <th>Created By</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for bug in bugs %}
-                    <tr>
-                        <td>{{ bug.project }}</td>
-                        <td>{{ bug.SDM }}</td>
-                        <td>{{ bug.issue_reported }}</td>
-                        <td>{{ bug.resolved_by }}</td>
-                        <td>{{ bug.created_at|date:"M d, Y" }}</td> 
-                        <td>{{ bug.created_by.first_name }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+            <div class="table-responsive"> <!-- Ensure table is responsive -->
+                <table class="table table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col">Project</th>
+                            <th scope="col">SDM</th>
+                            <th scope="col">Issue Reported</th>
+                            <th scope="col">Resolved By</th>
+                            <th scope="col">Created At</th>
+                            <th scope="col">Created By</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for bug in bugs %}
+                        <tr>
+                            <td>{{ bug.project }}</td>
+                            <td>{{ bug.SDM }}</td>
+                            <td>{{ bug.issue_reported }}</td>
+                            <td>{{ bug.resolved_by }}</td>
+                            <td>{{ bug.created_at|date:"M d, Y" }}</td> 
+                            <td>{{ bug.created_by.first_name }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         {% else %}
             <!-- Not Authenticated Message -->
             <p>Please <a href="{% url 'login' %}">login</a> to view the bug list.</p>
