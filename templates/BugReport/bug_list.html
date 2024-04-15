@@ -3,89 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Table</title>
+    <title>Bug Tracker | Bug List</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            padding: 20px;
+            padding-top: 50px; /* Add padding to body for fixed navbar */
         }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
+        .navbar {
+            background-color: #007bff; /* Navbar background color (Bootstrap primary color) */
         }
-
-        th, td {
-            border: 1px solid #dddddd;
-            text-align: left;
-            padding: 12px;
+        .navbar-text {
+            color: #ffffff; /* Navbar text color */
         }
-
-        th {
-            background-color: #f8f9fa;
+        .navbar-nav .nav-item {
+            margin-right: 10px; /* Add spacing between navbar items */
         }
-
-        .btn-primary {
+        .btn-primary-report {
             color: #fff;
-            background-color: #007bff;
-            border-color: #007bff;
+            background-color: #28a745; /* Green color for "Report New Bug" button */
+            border-color: #28a745;
             padding: 8px 16px;
             font-size: 14px;
             text-transform: uppercase;
         }
-
-        .btn-primary:hover {
-            background-color: #0056b3;
-            border-color: #0056b3;
+        .btn-primary-report:hover {
+            background-color: #218838; /* Darker green color on hover */
+            border-color: #1e7e34;
+        }
+        .btn-primary-logout {
+            color: #fff;
+            background-color: #dc3545; /* Red color for "Logout" button */
+            border-color: #dc3545;
+            padding: 8px 16px;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+        .btn-primary-logout:hover {
+            background-color: #c82333; /* Darker red color on hover */
+            border-color: #bd2130;
+        }
+        .btn-primary-download {
+            color: #fff;
+            background-color: #28a745; /* Green color for "Download" button */
+            border-color: #28a745;
+            padding: 8px 16px;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+        .btn-primary-download:hover {
+            background-color: #218838; /* Darker green color on hover */
+            border-color: #1e7e34;
         }
     </style>
 </head>
 <body>
-    {% if user.is_authenticated %}
-        <!-- Navigation and Actions -->
-        <nav class="navbar navbar-light bg-light">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="#">Bug Tracker</a>
-                <div class="d-flex">
-                    <a href="{% url 'BugReport:report_bug' %}" class="btn btn-primary me-2">Report New Bug</a>
-                    <a href="{% url 'BugReport:logout' %}" class="btn btn-danger">Logout</a>
-                </div>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">TIG Bug Tracker</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="btn btn-primary btn-primary-report" href="{% url 'BugReport:report_bug' %}">Report New Bug</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-primary btn-primary-download" href="{% url 'BugReport:download_bug_list_excel' %}">Download Bug List</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-primary btn-primary-logout" href="{% url 'BugReport:logout' %}">Logout</a>
+                    </li>
+                </ul>
             </div>
-        </nav>
+        </div>
+    </nav>
 
-        <!-- Bug List Table -->
-        <h2 class="mt-4">Bug List</h2>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Project</th>
-                    <th>SDM</th>
-                    <th>Issue Reported</th>
-                    <th>Resolved By</th>
-                    <th>Created At</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for bug in bugs %}
-                <tr>
-                    <td>{{ bug.project }}</td>
-                    <td>{{ bug.SDM }}</td>
-                    <td>{{ bug.issue_reported }}</td>
-                    <td>{{ bug.resolved_by }}</td>
-                    <td>{{ bug.created_at|date:"M d, Y" }}</td> 
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <div class="container mt-5">
+        {% if user.is_authenticated %}
+            <!-- Bug List Table -->
+            <h2>Bug List</h2>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Project</th>
+                        <th>SDM</th>
+                        <th>Issue Reported</th>
+                        <th>Resolved By</th>
+                        <th>Created At</th>
+                        <th>Created By</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for bug in bugs %}
+                    <tr>
+                        <td>{{ bug.project }}</td>
+                        <td>{{ bug.SDM }}</td>
+                        <td>{{ bug.issue_reported }}</td>
+                        <td>{{ bug.resolved_by }}</td>
+                        <td>{{ bug.created_at|date:"M d, Y" }}</td> 
+                        <td>{{ bug.created_by.first_name }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <!-- Not Authenticated Message -->
+            <p>Please <a href="{% url 'login' %}">login</a> to view the bug list.</p>
+        {% endif %}
+    </div>
 
-        <!-- Download Button -->
-        <a href="{% url 'BugReport:download_bug_list_excel' %}" class="btn btn-primary">Download Bug List as Excel</a>
-
-    {% else %}
-        <!-- Not Authenticated Message -->
-        <p class="mt-4">Please <a href="{% url 'login' %}">login</a> to view the bug list.</p>
-    {% endif %}
+    <!-- Bootstrap JS (optional, for navbar toggle) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

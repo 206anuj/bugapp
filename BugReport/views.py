@@ -38,11 +38,21 @@ def logout_view(request):
 @login_required
 def report_bug(request):
     if request.method == 'POST':
-        form = ReportForm(request.POST)
-        if form.is_valid():
-            # Save the form data to the database
-            form.save()
-            return redirect('/bug_list')
+        project = request.POST.get('project')
+        sdm = request.POST.get('SDM')
+        issue_reported = request.POST.get('issue_reported')
+        resolved_by = request.POST.get('resolved_by')  # Assuming you have a form field for this
+
+        # Assign the created_by field to the current logged-in user
+        new_bug = Bug.objects.create(
+            project=project,
+            SDM=sdm,
+            issue_reported=issue_reported,
+            resolved_by=resolved_by,
+            created_by=request.user  # Set the created_by field to the current user
+        )
+
+        return redirect('/bug_list')
     else:
         form = ReportForm()
     return render(request, 'BugReport/index.html', {'form': form})
@@ -54,7 +64,7 @@ def bug_list(request):
     bugs_ordered_by_created_at = Bug.objects.order_by('-created_at')
 
     context = {
-        'bugs': bugs_ordered_by_created_at
+        'bugs': bugs_ordered_by_created_at,
     }
     return render(request, 'BugReport/bug_list.html', context=context)
     # all_bugs = Bug.objects.all()
